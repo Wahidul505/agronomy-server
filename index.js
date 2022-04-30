@@ -40,6 +40,21 @@ async function run() {
             res.send(items);
         });
 
+        app.put('/item/:id', async (req, res)=>{
+            const id = req.params.id;
+            const quantity = req.body.quantity;
+            const filter = {_id: ObjectId(id)};
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    quantity: quantity
+                },
+            };
+            const result = await itemCollection.updateOne(filter, updateDoc, options);
+            res.send({message: "Delivered"});
+        })
+
+        // myitem er jonno client side e design implement korinai 
         app.get('/myItem', async (req, res) => {
             const email = req.query.email;
             console.log(email);
@@ -49,11 +64,23 @@ async function run() {
             res.send(items);
         });
 
-        app.post('/item', async (req, res)=>{
+        app.post('/item', async (req, res) => {
+            console.log(req.body.quantity);
+            if (req.body.quantity > 20) {
+                res.send({ success: false, message: "You Can't Add more than 20 Item at a time" });
+                return;
+            }
             const item = req.body;
             const result = await itemCollection.insertOne(item);
-            res.send({message: "Item Added"});
-        })
+            res.send({ success: true, message: "Item Added" });
+        });
+
+        app.delete('/item/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await itemCollection.deleteOne(query);
+            res.send({ message: 'Item deleted' });
+        });
     }
     finally { }
 };
