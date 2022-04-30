@@ -65,9 +65,8 @@ async function run() {
         });
 
         app.post('/item', async (req, res) => {
-            console.log(req.body.quantity);
-            if (req.body.quantity > 20) {
-                res.send({ success: false, message: "You Can't Add more than 20 Item at a time" });
+            if (req.body.quantity > 50) {
+                res.send({ success: false, message: "You Can't Add more than 50 Item at a time" });
                 return;
             }
             const item = req.body;
