@@ -26,11 +26,18 @@ async function run() {
             res.send(items);
         });
 
-        app.get('/item/:id', async (req, res)=>{
+        app.get('/item/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id: ObjectId(id)};
+            const query = { _id: ObjectId(id) };
             const item = await itemCollection.findOne(query);
             res.send(item);
+        });
+
+        app.get('/items', async (req, res) => {
+            const query = {};
+            const cursor = itemCollection.find(query);
+            const items = await cursor.toArray();
+            res.send(items);
         })
     }
     finally { }
