@@ -48,6 +48,12 @@ async function run() {
             const items = await cursor.toArray();
             res.send(items);
         });
+
+        app.post('/item', async (req, res)=>{
+            const item = req.body;
+            const result = await itemCollection.insertOne(item);
+            res.send({message: "Item Added"});
+        })
     }
     finally { }
 };
