@@ -44,10 +44,10 @@ async function run() {
         });
 
         // updating an item 
-        app.put('/item/:id', async (req, res)=>{
+        app.put('/item/:id', async (req, res) => {
             const id = req.params.id;
             const quantity = req.body.quantity;
-            const filter = {_id: ObjectId(id)};
+            const filter = { _id: ObjectId(id) };
             const options = { upsert: true };
             const updateDoc = {
                 $set: {
@@ -55,7 +55,7 @@ async function run() {
                 },
             };
             const result = await itemCollection.updateOne(filter, updateDoc, options);
-            res.send({message: "Delivered"});
+            res.send({ message: "Delivered" });
         })
 
         // getting item by a particular email 
@@ -85,6 +85,11 @@ async function run() {
             const result = await itemCollection.deleteOne(query);
             res.send({ message: 'Item deleted' });
         });
+
+        app.get('/itemCount', async (req, res) => {
+            const count = await itemCollection.countDocuments();
+            res.send({ count: count });
+        })
     }
     finally { }
 };
