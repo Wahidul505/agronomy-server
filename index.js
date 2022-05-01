@@ -43,6 +43,21 @@ async function run() {
             res.send(items);
         });
 
+        // updating an item 
+        app.put('/item/:id', async (req, res)=>{
+            const id = req.params.id;
+            const quantity = req.body.quantity;
+            const filter = {_id: ObjectId(id)};
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    quantity: quantity
+                },
+            };
+            const result = await itemCollection.updateOne(filter, updateDoc, options);
+            res.send({message: "Delivered"});
+        })
+
         // getting item by a particular email 
         app.get('/myItem', async (req, res) => {
             const email = req.query.email;
@@ -64,33 +79,12 @@ async function run() {
             res.send({ success: true, message: "Item Added" });
         });
 
-        // updating the quantity of an item
-        app.put('/item/:id', async (req, res) => {
-            const id = req.params.id;
-            const quantity = req.body.quantity;
-            const filter = { _id: ObjectId(id) };
-            const options = { upsert: true };
-            const updateDoc = {
-                $set: {
-                    quantity: quantity
-                },
-            };
-            const result = await itemCollection.updateOne(filter, updateDoc, options);
-            res.send({ message: "Delivered" });
-        })
-
-        // deleting an item 
         app.delete('/item/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await itemCollection.deleteOne(query);
             res.send({ message: 'Item deleted' });
         });
-
-        app.get('/itemCount', async (req, res) => {
-            const count = await itemCollection.countDocuments();
-            res.send(count);
-        })
     }
     finally { }
 };
