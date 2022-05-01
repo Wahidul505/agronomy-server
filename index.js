@@ -19,6 +19,7 @@ async function run() {
         client.connect();
         const itemCollection = client.db('agronomy').collection('items');
 
+        // getting maximum 6 items to display in home page 
         app.get('/item', async (req, res) => {
             const query = {};
             const cursor = itemCollection.find(query).limit(6);
@@ -26,6 +27,7 @@ async function run() {
             res.send(items);
         });
 
+        // getting item by their id 
         app.get('/item/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
@@ -33,6 +35,7 @@ async function run() {
             res.send(item);
         });
 
+        // getting all items 
         app.get('/items', async (req, res) => {
             const query = {};
             const cursor = itemCollection.find(query);
@@ -40,21 +43,7 @@ async function run() {
             res.send(items);
         });
 
-        app.put('/item/:id', async (req, res)=>{
-            const id = req.params.id;
-            const quantity = req.body.quantity;
-            const filter = {_id: ObjectId(id)};
-            const options = { upsert: true };
-            const updateDoc = {
-                $set: {
-                    quantity: quantity
-                },
-            };
-            const result = await itemCollection.updateOne(filter, updateDoc, options);
-            res.send({message: "Delivered"});
-        })
-
-        // myitem er jonno client side e design implement korinai 
+        // getting item by a particular email 
         app.get('/myItem', async (req, res) => {
             const email = req.query.email;
             console.log(email);
@@ -64,6 +53,7 @@ async function run() {
             res.send(items);
         });
 
+        // adding item to database 
         app.post('/item', async (req, res) => {
             if (req.body.quantity > 50) {
                 res.send({ success: false, message: "You Can't Add more than 50 Item at a time" });
@@ -74,12 +64,33 @@ async function run() {
             res.send({ success: true, message: "Item Added" });
         });
 
+        // updating the quantity of an item
+        app.put('/item/:id', async (req, res) => {
+            const id = req.params.id;
+            const quantity = req.body.quantity;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    quantity: quantity
+                },
+            };
+            const result = await itemCollection.updateOne(filter, updateDoc, options);
+            res.send({ message: "Delivered" });
+        })
+
+        // deleting an item 
         app.delete('/item/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await itemCollection.deleteOne(query);
             res.send({ message: 'Item deleted' });
         });
+
+        app.get('/itemCount', async (req, res) => {
+            const count = await itemCollection.countDocuments();
+            res.send(count);
+        })
     }
     finally { }
 };
