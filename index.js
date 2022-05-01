@@ -94,12 +94,20 @@ async function run() {
         });
 
         // getting items with highest quantity 
-        app.get('/sortedItem', async (req, res) => {
+        app.get('/sortedItemByQuantity', async (req, res) => {
             const query = {};
             const cursor = itemCollection.find(query).sort({ quantity: -1 }).limit(3);
             const sortedItems = await cursor.toArray();
             res.send(sortedItems);
-        })
+        });
+
+        // getting item with the highest price 
+        app.get('/highestPriceItem', async (req, res) => {
+            const query = {};
+            const cursor = itemCollection.find(query).sort({ price: -1 }).limit(1);
+            const highestPriceItem = await cursor.toArray();
+            res.send(highestPriceItem);
+        });
     }
     finally { }
 };
