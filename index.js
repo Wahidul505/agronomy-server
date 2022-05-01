@@ -79,6 +79,7 @@ async function run() {
             res.send({ success: true, message: "Item Added" });
         });
 
+        // deleting item by their id 
         app.delete('/item/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
@@ -86,9 +87,18 @@ async function run() {
             res.send({ message: 'Item deleted' });
         });
 
+        // counting total items in database 
         app.get('/itemCount', async (req, res) => {
             const count = await itemCollection.countDocuments();
             res.send({ count: count });
+        });
+
+        // getting items with highest quantity 
+        app.get('/sortedItem', async (req, res) => {
+            const query = {};
+            const cursor = itemCollection.find(query).sort({ quantity: -1 }).limit(3);
+            const sortedItems = await cursor.toArray();
+            res.send(sortedItems);
         })
     }
     finally { }
