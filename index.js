@@ -59,21 +59,24 @@ async function run() {
             res.send({ message: "Delivered" });
         })
 
-        // getting item by a particular email 
+        // getting item by a particular email and using jwt verification 
         app.get('/myItem', async (req, res) => {
             const email = req.query.email;
             const token = req.query.token;
-            const decoded = jwt.verify(token, process.env.ACCESS_TOKEN);
-            console.log(decoded)
-            if(decoded === email){
-                const query = { email: email };
-                const cursor = itemCollection.find(query);
-                const items = await cursor.toArray();
-                res.send(items);
+            if (!token) {
+                res.send({ success: false, message: 'UnAuthorized User' })
             }
-            else{
-                res.send({message: 'Error'})
-            }
+            jwt.verify(token, process.env.ACCESS_TOKEN, async (err, decoded) => {
+                if (err) {
+                    res.send({ success: false, message: 'UnAuthorized User' })
+                }
+                else if (decoded) {
+                    const query = { email: email };
+                    const cursor = itemCollection.find(query);
+                    const items = await cursor.toArray();
+                    res.send({ success: true, data: items });
+                }
+            })
         });
 
         // adding item to database 
