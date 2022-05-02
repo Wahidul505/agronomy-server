@@ -38,8 +38,10 @@ async function run() {
 
         // getting all items 
         app.get('/items', async (req, res) => {
+            const page = parseInt(req.query.page);
+            const number = parseInt(req.query.limit);
             const query = {};
-            const cursor = itemCollection.find(query);
+            const cursor = itemCollection.find(query).skip(page * number).limit(number);
             const items = await cursor.toArray();
             res.send(items);
         });
