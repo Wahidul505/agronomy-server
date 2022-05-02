@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
+const jwt = require('jsonwebtoken');
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -61,11 +62,18 @@ async function run() {
         // getting item by a particular email 
         app.get('/myItem', async (req, res) => {
             const email = req.query.email;
-            console.log(email);
-            const query = { email: email };
-            const cursor = itemCollection.find(query);
-            const items = await cursor.toArray();
-            res.send(items);
+            const token = req.query.token;
+            const decoded = jwt.verify(token, process.env.ACCESS_TOKEN);
+            console.log(decoded)
+            if(decoded === email){
+                const query = { email: email };
+                const cursor = itemCollection.find(query);
+                const items = await cursor.toArray();
+                res.send(items);
+            }
+            else{
+                res.send({message: 'Error'})
+            }
         });
 
         // adding item to database 
@@ -108,6 +116,13 @@ async function run() {
             const highestPriceItem = await cursor.toArray();
             res.send(highestPriceItem);
         });
+
+        // sending access token to the client 
+        app.post('/access', async (req, res) => {
+            const email = req.body.email;
+            const token = jwt.sign(email, process.env.ACCESS_TOKEN);
+            res.send({ token: token });
+        })
     }
     finally { }
 };
