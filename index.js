@@ -138,4 +138,6 @@ app.get('/', (req, res) => {
     res.send('Server connected');
 });
 
+
+// port where the server runs 
 app.listen(port, () => console.log('listening to port,', port));
