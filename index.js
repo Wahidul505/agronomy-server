@@ -10,6 +10,11 @@ const port = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
+app.use(
+    cors({
+      origin: "*",
+    })
+  );
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.aofkw.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
@@ -45,6 +50,11 @@ async function run() {
             const items = await cursor.toArray();
             res.send(items);
         });
+
+        app.get('/all-items', async (req, res) => {
+            const items = await itemCollection.find().sort({ name: 1 }).toArray();
+            res.send(items);
+        })
 
         // updating an item 
         app.put('/item/:id', async (req, res) => {
